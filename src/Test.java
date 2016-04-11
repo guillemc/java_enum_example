@@ -43,5 +43,34 @@ public class Test {
 
         n = new Note("G", 9);
         System.out.println(n);
+
+        for (int i = 0; i < 5; i++) {
+            n = Note.getRandomNote(60, 80);
+            System.out.println(n);
+        }
+
+        n = new Note("C");
+        System.out.println(n);
+
+        Note m = n.plusInterval(Interval.AUG4);
+        System.out.println(m);
+
+        m = m.plusInterval(Interval.DIM5);
+        System.out.println(m);
+
+        m = m.plusInterval(Interval.m9);
+        System.out.println(m);
+
+        m = m.minusInterval(Interval.m9).minusInterval(Interval.OCTAVE);
+        System.out.println(m);
+
+
+
+        n = new Note("Bb");
+        System.out.println(n.getName());
+
+        m = n.plusInterval(Interval.m3);
+        System.out.println(m.getName());
+
     }
 }

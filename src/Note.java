@@ -10,11 +10,11 @@ public class Note {
     private int midiNumber;
     private int octave;
     private String defaultName;
-    private String flatName;
-    private boolean preferFlatName = false;
+    private String altName;
+    private boolean preferAltName = false;
 
     private final static String[] noteNames = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
-    private final static char[] letters = {'C', 'D', 'E', 'F', 'G', 'A', 'B'};
+    private final static String letters = "CDEFGAB";
 
     public Note(int midiNumber) {
         if (midiNumber < MIN_NUMBER || midiNumber > MAX_NUMBER) {
@@ -27,7 +27,7 @@ public class Note {
         this.defaultName = noteNames[position];
 
         if (this.defaultName.length() == 2) {
-            this.flatName = noteNames[position + 1] + "b";
+            this.altName = noteNames[position + 1] + "b";
         }
     }
 
@@ -39,12 +39,12 @@ public class Note {
             index = indexOf(noteName);
         } else { // assume it's a flat
             index = indexOf(String.valueOf(noteName.charAt(0)));
-            this.preferFlatName = true;
+            this.preferAltName = true;
         }
         if (index == -1 ) {
             throw new IllegalArgumentException("Unrecognized note: " + noteName);
         }
-        if (this.preferFlatName) {
+        if (this.preferAltName) {
             index = index - 1;
             if (index < 0) index = noteNames.length - 1;
         }
@@ -56,7 +56,7 @@ public class Note {
         this.octave = octave;
         this.defaultName = noteNames[index];
         if (this.defaultName.length() == 2) {
-            this.flatName = noteNames[index + 1] + "b";
+            this.altName = noteNames[index + 1] + "b";
         }
     }
 
@@ -77,31 +77,71 @@ public class Note {
         return defaultName;
     }
 
-    public String getFlatName() {
-        return flatName;
+    public String getAltName() {
+        return altName;
     }
 
-
     public String getName() {
-        return preferFlatName && flatName != null ? flatName : defaultName;
+        return preferAltName && altName != null ? altName : defaultName;
+    }
+
+    public void setPreferAltName(boolean preferAltName) {
+        this.preferAltName = preferAltName;
     }
 
     public String toString() {
         StringBuffer b = new StringBuffer(this.defaultName);
-        if (this.flatName != null) {
-            b.append("/").append(this.flatName);
+        if (this.altName != null) {
+            b.append("/").append(this.altName);
         }
         b.append(" (").append(this.octave).append(")");
         b.append(" ").append(this.getMidiNumber());
         return b.toString();
     }
 
-    public static int indexOf(String note) {
+    private static int indexOf(String note) {
         for (int i = 0; i < noteNames.length; i++) {
             if (noteNames[i].equals(note)) {
                 return i;
             }
         }
         return -1;
+    }
+
+    public static Note getRandomNote(int minNumber, int maxNumber) {
+        return new Note(minNumber + 1 + (int)((maxNumber - minNumber) * Math.random()));
+    }
+
+    public Note plusSemitones(int semitones, int preferredInterval) {
+        Note note = new Note(this.midiNumber + semitones);
+        String altName = note.getAltName();
+        if (altName != null && getLetterAtInterval(getName().charAt(0), preferredInterval) == altName.charAt(0)) {
+            note.setPreferAltName(true);
+        }
+        return note;
+    }
+
+    public Note plusInterval(Interval interval) {
+        return plusSemitones(interval.getSemitones(), interval.getInterval());
+    }
+
+    public Note minusInterval(Interval interval) {
+        return plusSemitones(-1 * interval.getSemitones(), interval.getInterval());
+    }
+
+    public static char getLetterAtInterval(char letter, int interval) {
+        int currentIndex = letters.indexOf(letter);
+        if (currentIndex == -1) {
+            throw new IllegalArgumentException("Invalid note letter");
+        }
+        int newIndex = currentIndex + interval - 1;
+        int l = letters.length();
+        while (newIndex > l - 1) {
+            newIndex -= l;
+        }
+        while (newIndex < 0) {
+            newIndex += l;
+        }
+        return letters.charAt(newIndex);
     }
 }
