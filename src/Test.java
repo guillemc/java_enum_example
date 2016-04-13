@@ -72,5 +72,17 @@ public class Test {
         m = n.plusInterval(Interval.m3);
         System.out.println(m.getName());
 
+
+        Number number = new Number("#4");
+        System.out.println(number.getName());
+        System.out.println(number.getNote(new Note("C")).getName());
+
+        number = number.plusInterval(Interval.P5);
+        System.out.println(number.getName() + ", " + number.getRelativeOctave());
+        System.out.println(number.getNote(new Note("C")).getName());
+
+        number = number.minusInterval(Interval.m3);
+        System.out.println(number.getName() + ", " + number.getRelativeOctave());
+        System.out.println(number.getNote(new Note("C")).getName());
     }
 }
