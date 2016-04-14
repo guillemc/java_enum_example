@@ -1,3 +1,5 @@
+package net.guillemc.notes;
+
 public class Number {
 
     private int relativeOctave;
@@ -48,7 +50,7 @@ public class Number {
         }
     }
 
-    private static int indexOf(String name) {
+    protected static int indexOf(String name) {
         for (int i = 0; i < defaultNames.length; i++) {
             if (defaultNames[i].equals(name)) {
                 return i;
@@ -72,7 +74,7 @@ public class Number {
         Number n = new Number(defaultNames[newIndex], relativeOctave);
         String altName = n.getAltName();
         if (altName != null && altName.length() > 1) {
-            int preferredDegree = getDegreeAtInterval(getDegree(), preferredInterval);
+            int preferredDegree = getDegreeAtInterval(preferredInterval);
             int alt = Integer.valueOf(altName.substring(1,2));
             if (preferredDegree == alt) {
                 n.setPreferAltName(true);
@@ -90,8 +92,8 @@ public class Number {
         return plusSemitones(-1 * interval.getSemitones(), interval.getInterval());
     }
 
-    public static int getDegreeAtInterval(int degree, int interval) {
-        int newDegree = degree + interval - 1;
+    protected int getDegreeAtInterval(int interval) {
+        int newDegree = getDegree() + interval - 1;
         while (newDegree > 7) {
             newDegree -= 7;
         }
@@ -124,5 +126,24 @@ public class Number {
 
     public Note getNote(Note base) {
         return base.plusSemitones(this.getSemitones() + 12*this.getRelativeOctave(), this.getDegree());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Number number = (Number) o;
+
+        if (relativeOctave != number.relativeOctave) return false;
+        return semitones == number.semitones;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = relativeOctave;
+        result = 31 * result + semitones;
+        return result;
     }
 }

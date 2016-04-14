@@ -1,3 +1,4 @@
+package net.guillemc.notes;
 
 public enum Interval {
     UNISON(0, 1, "Unison"),

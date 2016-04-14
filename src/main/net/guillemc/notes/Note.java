@@ -1,3 +1,4 @@
+package net.guillemc.notes;
 
 public class Note {
 
@@ -16,7 +17,7 @@ public class Note {
     private final static String[] noteNames = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
     private final static String letters = "CDEFGAB";
 
-    public Note(int midiNumber) {
+    public Note(int midiNumber, boolean preferAltName) {
         if (midiNumber < MIN_NUMBER || midiNumber > MAX_NUMBER) {
             throw new IllegalArgumentException("Invalid note number: " + midiNumber);
         }
@@ -29,6 +30,12 @@ public class Note {
         if (this.defaultName.length() == 2) {
             this.altName = noteNames[position + 1] + "b";
         }
+
+        this.preferAltName = preferAltName;
+    }
+
+    public Note(int midiNumber) {
+        this(midiNumber, false);
     }
 
     public Note(String noteName, int octave) {
@@ -50,7 +57,7 @@ public class Note {
         }
         int midiNumber = (octave + 1) * noteNames.length + index;
         if (midiNumber < MIN_NUMBER || midiNumber > MAX_NUMBER) {
-            throw new IllegalArgumentException("Note/octave combination is out of range: " + noteName + "/" + octave);
+            throw new IllegalArgumentException("net.guillemc.notes.Note/octave combination is out of range: " + noteName + "/" + octave);
         }
         this.midiNumber = midiNumber;
         this.octave = octave;
@@ -99,7 +106,7 @@ public class Note {
         return b.toString();
     }
 
-    private static int indexOf(String note) {
+    protected static int indexOf(String note) {
         for (int i = 0; i < noteNames.length; i++) {
             if (noteNames[i].equals(note)) {
                 return i;
@@ -109,16 +116,22 @@ public class Note {
     }
 
     public static Note getRandomNote(int minNumber, int maxNumber) {
-        return new Note(minNumber + 1 + (int)((maxNumber - minNumber) * Math.random()));
+        return new Note(minNumber + (int)((maxNumber - minNumber) * Math.random()));
     }
 
     public Note plusSemitones(int semitones, int preferredInterval) {
         Note note = new Note(this.midiNumber + semitones);
-        String altName = note.getAltName();
-        if (altName != null && getLetterAtInterval(getName().charAt(0), preferredInterval) == altName.charAt(0)) {
-            note.setPreferAltName(true);
+        if (preferredInterval != 0) {
+            String altName = note.getAltName();
+            if (altName != null && getLetterAtInterval(preferredInterval) == altName.charAt(0)) {
+                note.setPreferAltName(true);
+            }
         }
         return note;
+    }
+
+    public Note plusSemitones(int semitones) {
+        return plusSemitones(semitones, 0);
     }
 
     public Note plusInterval(Interval interval) {
@@ -126,15 +139,12 @@ public class Note {
     }
 
     public Note minusInterval(Interval interval) {
-        return plusSemitones(-1 * interval.getSemitones(), interval.getInterval());
+        return plusSemitones(-1 * interval.getSemitones(), -1 * interval.getInterval());
     }
 
-    public static char getLetterAtInterval(char letter, int interval) {
-        int currentIndex = letters.indexOf(letter);
-        if (currentIndex == -1) {
-            throw new IllegalArgumentException("Invalid note letter");
-        }
-        int newIndex = currentIndex + interval - 1;
+    protected char getLetterAtInterval(int interval) {
+        int currentIndex = letters.indexOf(getName().charAt(0));
+        int newIndex = interval >= 0 ? currentIndex + interval - 1 : currentIndex + interval + 1;
         int l = letters.length();
         while (newIndex > l - 1) {
             newIndex -= l;
@@ -143,5 +153,21 @@ public class Note {
             newIndex += l;
         }
         return letters.charAt(newIndex);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Note note = (Note) o;
+
+        return midiNumber == note.midiNumber;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return midiNumber;
     }
 }
