@@ -72,16 +72,21 @@ public class Number {
             relativeOctave -= 1;
         }
         Number n = new Number(defaultNames[newIndex], relativeOctave);
-        String altName = n.getAltName();
-        if (altName != null && altName.length() > 1) {
-            int preferredDegree = getDegreeAtInterval(preferredInterval);
-            int alt = Integer.valueOf(altName.substring(1,2));
-            if (preferredDegree == alt) {
-                n.setPreferAltName(true);
+        if (preferredInterval != 0) {
+            String altName = n.getAltName();
+            if (altName != null && altName.length() > 1) {
+                int preferredDegree = getDegreeAtInterval(preferredInterval);
+                int alt = Integer.valueOf(altName.substring(1, 2));
+                if (preferredDegree == alt) {
+                    n.setPreferAltName(true);
+                }
             }
         }
         return n;
+    }
 
+    public Number plusSemitones(int semitones) {
+        return plusSemitones(semitones, 0);
     }
 
     public Number plusInterval(Interval interval) {
@@ -89,13 +94,16 @@ public class Number {
     }
 
     public Number minusInterval(Interval interval) {
-        return plusSemitones(-1 * interval.getSemitones(), interval.getInterval());
+        return plusSemitones(-1 * interval.getSemitones(), -1 * interval.getInterval());
     }
 
     protected int getDegreeAtInterval(int interval) {
-        int newDegree = getDegree() + interval - 1;
+        int newDegree = interval >= 0 ? getDegree() + interval - 1 : getDegree() + interval + 1;
         while (newDegree > 7) {
             newDegree -= 7;
+        }
+        while (newDegree < 0) {
+            newDegree += 7;
         }
         return newDegree;
     }
@@ -126,6 +134,20 @@ public class Number {
 
     public Note getNote(Note base) {
         return base.plusSemitones(this.getSemitones() + 12*this.getRelativeOctave(), this.getDegree());
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer b = new StringBuffer(this.defaultName);
+        if (this.altName != null) {
+            b.append("/").append(this.altName);
+        }
+        if (relativeOctave != 0) {
+
+        }
+        b.append(" (").append(this.relativeOctave).append(")");
+
+        return b.toString();
     }
 
     @Override

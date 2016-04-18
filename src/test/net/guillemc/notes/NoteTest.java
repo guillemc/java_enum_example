@@ -25,9 +25,9 @@ public class NoteTest {
         bFlat = new Note("Bb", 4);
 
         c5 = new Note(72);
-        fSharp5 = new Note(78);
+        fSharp5 = new Note(78); // default is sharp name
         a5 = new Note(81);
-        bFlat5 = new Note(82, true); // prefer flat name
+        bFlat5 = new Note(82, 'b'); // prefer flat name
     }
 
     @Test
@@ -93,6 +93,7 @@ public class NoteTest {
 
         assertEquals(c.plusSemitones(-6, -5).getName(), "F#");
         assertEquals(c.plusSemitones(-6, -4).getName(), "Gb");
+
     }
 
     @Test

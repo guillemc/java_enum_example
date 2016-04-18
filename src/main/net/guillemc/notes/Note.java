@@ -38,6 +38,11 @@ public class Note {
         this(midiNumber, false);
     }
 
+    public Note(int midiNumber, char preferredAccidental) {
+        this(midiNumber, false);
+        setPreferredAccidental(preferredAccidental);
+    }
+
     public Note(String noteName, int octave) {
         noteName = noteName.toUpperCase();
         int l = noteName.length();
@@ -71,7 +76,6 @@ public class Note {
         this(noteName, 4);
     }
 
-
     public int getMidiNumber() {
         return midiNumber;
     }
@@ -96,6 +100,11 @@ public class Note {
         this.preferAltName = preferAltName;
     }
 
+    public void setPreferredAccidental(char preferredAccidental) {
+        preferAltName = altName != null && altName.charAt(1) == preferredAccidental;
+    }
+
+    @Override
     public String toString() {
         StringBuffer b = new StringBuffer(this.defaultName);
         if (this.altName != null) {
