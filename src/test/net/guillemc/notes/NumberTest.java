@@ -20,6 +20,14 @@ public class NumberTest {
     }
 
     @Test
+    public void testGetName() throws Exception {
+        assertEquals(sharpFour.getName(), "#4");
+        assertEquals(sharpFour.getName('b'), "b5");
+        assertEquals(flatFive.getName(), "b5");
+        assertEquals(flatFive.getName('#'), "#4");
+    }
+
+    @Test
     public void testGetDegree() throws Exception {
         assertEquals(one.getDegree(), 1);
         assertEquals(sharpFour.getDegree(), 4);

@@ -132,6 +132,10 @@ public class Number {
         return preferAltName && altName != null ? altName : defaultName;
     }
 
+    public String getName(char preferredAccidental) {
+        return altName != null && altName.charAt(0) == preferredAccidental ? altName : defaultName;
+    }
+
     public Note getNote(Note base) {
         return base.plusSemitones(this.getSemitones() + 12*this.getRelativeOctave(), this.getDegree());
     }

@@ -41,6 +41,9 @@ public class NoteTest {
         assertEquals("F#", fSharp5.getName());
         assertEquals("A", a5.getName());
         assertEquals("Bb", bFlat5.getName());
+
+        assertEquals("F#", fSharp5.getName('#'));
+        assertEquals("Gb", fSharp5.getName('b'));
     }
 
     @Test

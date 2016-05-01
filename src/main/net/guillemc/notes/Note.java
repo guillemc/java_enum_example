@@ -96,6 +96,10 @@ public class Note {
         return preferAltName && altName != null ? altName : defaultName;
     }
 
+    public String getName(char preferredAccidental) {
+        return altName != null && altName.charAt(1) == preferredAccidental ? altName : defaultName;
+    }
+
     public void setPreferAltName(boolean preferAltName) {
         this.preferAltName = preferAltName;
     }
